@@ -34,32 +34,54 @@ export async function getUserById(userId: string) {
 
 // Update
 export async function updateUser(clerkId: string, user: UpdateUserParams) {
-    try {
-        await connectToDatabase();
+  try {
+    await connectToDatabase();
 
-        const updatedUser = await User.findOneAndUpdate({ clerkId }, user, { new: true });
+    const updatedUser = await User.findOneAndUpdate({ clerkId }, user, {
+      new: true,
+    });
 
-        if (!updatedUser) throw new Error("User not updated");
+    if (!updatedUser) throw new Error("User not updated");
 
-        return JSON.parse(JSON.stringify(updatedUser));
-    } catch (error) {
-        handleError(error);
-    }    
+    return JSON.parse(JSON.stringify(updatedUser));
+  } catch (error) {
+    handleError(error);
+  }
 }
 
 // Delete
 export async function deleteUser(clerkId: string) {
-    try {
-        await connectToDatabase();
+  try {
+    await connectToDatabase();
 
-        const userToDelete = await User.findOne({ clerkId });
+    const userToDelete = await User.findOne({ clerkId });
 
-        if (!userToDelete) throw new Error("User not found");
+    if (!userToDelete) throw new Error("User not found");
 
-        const deletedUser = await User.findByIdAndDelete(userToDelete._id);
+    const deletedUser = await User.findByIdAndDelete(userToDelete._id);
 
-        return deletedUser ? JSON.parse(JSON.stringify(deleteUser)) : null;
-    } catch (error) {
-        handleError(error);
-    }
+    return deletedUser ? JSON.parse(JSON.stringify(deleteUser)) : null;
+  } catch (error) {
+    handleError(error);
+  }
+}
+
+// use credits
+
+export async function updateCredits(userId: string, creditFee: number) {
+  try {
+    await connectToDatabase();
+
+    const updatedUserCredits = await User.findOneAndUpdate(
+      { _id: userId },
+      { $inc: { creditBalance: creditFee } },
+      { new: true }
+    );
+
+    if (!updatedUserCredits) throw new Error("User credits update failed");
+
+    return JSON.parse(JSON.stringify(updatedUserCredits));
+  } catch (error) {
+    handleError(error);
+  }
 }
